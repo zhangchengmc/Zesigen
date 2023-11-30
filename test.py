@@ -33,7 +33,7 @@ def choose_save_location(file_name):
     return save_path
 
 def is_html_file(file_path):
-    # 检测文件扩展名是否是.html或.htm
+    # 检测文件扩展名是否是.html或.htm的文件名
     _, file_ext = os.path.splitext(file_path)
     return file_ext.lower() in ['.html', '.htm']
 
