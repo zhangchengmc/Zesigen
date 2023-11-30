@@ -7,7 +7,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest  # 使用最新的 Windows 操作系统
+    runs-on: ubuntu-latest  # 使用最新的 Windows 操作系统
 
     steps:
     - uses: actions/checkout@v2  # 检出代码到 GitHub Actions
