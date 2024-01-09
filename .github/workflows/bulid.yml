@@ -1,32 +1,60 @@
-name: Compile Python Script
+name: Compile and Upload Python Script
 
 on:
   push:
     branches:
-      - main  # 可以修改为你需要的分支
+      - main
 
 jobs:
   build:
-    runs-on: windows-latest
-    
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+        python-version: [3.x]
+
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v2
-      
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'  # 可以替换为最新的 Python 版本
-      
-    - name: Install dependencies
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install requests tqdm
-      
+
     - name: Compile 32-bit Python script
-      run: py -m py_compile test.py  # 编译 test.py 文件为字节码（32位）
+      run: |
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          py -m PyInstaller --distpath dist/win32 --onefile --arch 32 test.py
+        else
+          python -m nuitka --mingw64 --output-dir=dist/linux32 --lto-file=test test.py
+        fi
       working-directory: ${{ github.workspace }}
-      
+
     - name: Compile 64-bit Python script
-      run: py -X 64 -m py_compile test.py  # 编译 test.py 文件为字节码（64位）
+      run: |
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          py -m PyInstaller --distpath dist/win64 --onefile --arch 64 test.py
+        elif [[ "${{ matrix.os }}" == "macOS-latest" ]]; then
+          python -m nuitka --output-dir=dist/macos64 --lto-file=test test.py
+        else
+          python -m nuitka --output-dir=dist/linux64 --lto-file=test test.py
+        fi
       working-directory: ${{ github.workspace }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: compiled-files
+        path: |
+          dist/win32/
+          dist/win64/
+          dist/linux32/
+          dist/linux64/
+          dist/macos64/
