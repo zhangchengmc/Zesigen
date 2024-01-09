@@ -28,13 +28,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests tqdm
 
+    - name: Install Nuitka (Linux Only)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        python -m pip install nuitka
+
     - name: Compile 32-bit Python script (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         py -m PyInstaller --distpath dist/win32 --onefile --arch 32 test.py
       working-directory: ${{ github.workspace }}
 
-    - name: Compile 64-bit Python script
+    - name: Compile 64-bit Python script (macOS and Linux)
       run: |
         if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
           py -m PyInstaller --distpath dist/win64 --onefile --arch 64 test.py
