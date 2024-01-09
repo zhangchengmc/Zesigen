@@ -22,24 +22,13 @@ jobs:
         run: |
           python -m pip install requests tqdm pyinstaller
 
-      - name: Build 32-bit binary
-        run: |
-          python -m py_compile test.py
-          pyinstaller --onefile --distpath build/windows32 --specpath build --name test32 test.py
-
       - name: Build 64-bit binary
         run: |
           python -m py_compile test.py
-          pyinstaller --onefile --distpath build/windows64 --specpath build --name test64 test.py
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: Windows 32-bit
-          path: build/windows32/test32.exe
+          pyinstaller --distpath build --name Zesigen-Download-Manager.exe -D -F test.py
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Windows 64-bit
-          path: build/windows64/test64.exe
+          path: build/Zesigen-Download-Manager.exe
