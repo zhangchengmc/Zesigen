@@ -28,23 +28,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests tqdm
 
-    - name: Compile 32-bit Python script
+    - name: Compile 32-bit Python script (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
-        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          py -m PyInstaller --distpath dist/win32 --onefile --arch 32 test.py
-        else
-          python -m nuitka --mingw64 --output-dir=dist/linux32 --lto-file=test test.py
-        fi
+        py -m PyInstaller --distpath dist/win32 --onefile --arch 32 test.py
       working-directory: ${{ github.workspace }}
 
     - name: Compile 64-bit Python script
       run: |
         if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
           py -m PyInstaller --distpath dist/win64 --onefile --arch 64 test.py
-        elif [[ "${{ matrix.os }}" == "macOS-latest" ]]; then
-          python -m nuitka --output-dir=dist/macos64 --lto-file=test test.py
         else
-          python -m nuitka --output-dir=dist/linux64 --lto-file=test test.py
+          python -m nuitka --output-dir=dist/${{ matrix.os }}/ --lto-file=test test.py
         fi
       working-directory: ${{ github.workspace }}
 
@@ -55,6 +50,5 @@ jobs:
         path: |
           dist/win32/
           dist/win64/
-          dist/linux32/
-          dist/linux64/
-          dist/macos64/
+          dist/macos/
+          dist/ubuntu/
