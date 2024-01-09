@@ -1,37 +1,32 @@
-name: Build Python Project
+name: Compile Python Script
 
 on:
   push:
     branches:
-      - main
+      - main  # 可以修改为你需要的分支
 
 jobs:
   build:
     runs-on: windows-latest
     
-    strategy:
-      matrix:
-        python-version: [3.10]
-
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v2
-
+      
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Dependencies
+        python-version: '3.x'  # 可以替换为最新的 Python 版本
+      
+    - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        python -m pip install --upgrade pip
         pip install requests tqdm
-
-    - name: Build 32-bit Version
-      run: py -m PyInstaller --distpath dist/win32 --onefile --arch 32 test.py
-
-    - name: Build 64-bit Version
-      run: py -m PyInstaller --distpath dist/win64 --onefile --arch 64 test.py
-
-    - name: Upload Artifacts
-      uses
+      
+    - name: Compile 32-bit Python script
+      run: py -m py_compile test.py  # 编译 test.py 文件为字节码（32位）
+      working-directory: ${{ github.workspace }}
+      
+    - name: Compile 64-bit Python script
+      run: py -X 64 -m py_compile test.py  # 编译 test.py 文件为字节码（64位）
+      working-directory: ${{ github.workspace }}
