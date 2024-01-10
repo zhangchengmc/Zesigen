@@ -20,8 +20,11 @@ jobs:
       run: |
         pip install requests tqdm
 
-    - name: Build
-      run: pyinstaller --onedir test.py
+    - name: Add Python Scripts to PATH
+      run: |
+        Add-Path "${pythonLocation}\Scripts"
+        Get-Command pyinstaller
+        pyinstaller --onedir test.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
