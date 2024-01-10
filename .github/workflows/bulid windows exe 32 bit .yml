@@ -17,7 +17,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'  # 使用最新的Python 3版本
-          architecture: 'x86'    # 设置为32位架构
 
       - name: Install dependencies
         run: |
@@ -25,14 +24,14 @@ jobs:
 
       - name: Install PyInstaller
         run: |
-          pip install pyinstaller
+          python -m pip install pyinstaller
 
       - name: Build 32-bit Program
         run: |
-          py -m venv venv
+          python -m venv venv
           venv\Scripts\activate
-          py -m pip install pyinstaller
-          py -m pyinstaller --noconfirm --assume-yes --onedir test.py
+          python -m pip install pyinstaller
+          python -m pyinstaller --noconfirm --assume-yes --onedir --arch=386 test.py
 
       - name: Upload built files
         uses: actions/upload-artifact@v2
