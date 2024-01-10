@@ -1,0 +1,34 @@
+name: Build and Upload 32-bit Program
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x' # 使用最新的32位Python版本
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+          pip install tqdm
+
+      - name: Build program
+        run: |
+          pyinstaller --onefile --distpath output --clean test.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Compiled Program
+          path: output/
