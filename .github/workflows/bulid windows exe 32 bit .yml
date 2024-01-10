@@ -36,5 +36,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: 32bit_program
-          path: dist/
- 
+          path: dist/ 
