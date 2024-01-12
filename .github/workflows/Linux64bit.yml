@@ -1,0 +1,35 @@
+name: Build and Upload
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Upload
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2.2.1
+        with:
+          python-version: '3'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build executable
+        run: pyinstaller test.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: executable
+          path: dist/test
+
+      - name: Remove build files
+        run: rm -r build dist test.spec
