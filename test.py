@@ -4,6 +4,7 @@ from tkinter import filedialog
 from tqdm import tqdm
 import os
 import threading
+import webbrowser
 
 def get_filename_from_url(url):
     # 从下载链接中提取文件名.
@@ -37,6 +38,9 @@ def is_html_file(file_path):
     _, file_ext = os.path.splitext(file_path)
     return file_ext.lower() in ['.html', '.htm']
 
+def open_url_in_browser(url):
+    webbrowser.open(url)
+
 def download_single_file(url, save_path):
     if url.startswith('ftp'):
         download_ftp_file(url, save_path)
@@ -61,10 +65,13 @@ def download():
     threads = []
 
     for url in urls:
-        save_path = choose_save_location(get_filename_from_url(url))
-        thread = threading.Thread(target=download_single_file, args=(url, save_path))
-        threads.append(thread)
-        thread.start()
+        if url == "-mickey-mouse":
+            open_url_in_browser("https://luotianyimiku.github.io/R-C.jpg")
+        else:
+            save_path = choose_save_location(get_filename_from_url(url))
+            thread = threading.Thread(target=download_single_file, args=(url, save_path))
+            threads.append(thread)
+            thread.start()
 
     for thread in threads:
         thread.join()
