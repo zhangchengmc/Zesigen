@@ -27,4 +27,4 @@ jobs:
           pip install pyinstaller
 
       - name: Create Executable
-        run: pyinstaller --D --name "test" test.py
+        run: pyinstaller -D test.py
