@@ -37,3 +37,9 @@ jobs:
       - name: Compress to ZIP
         run: |
           7z a -tzip test.zip dist/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-zip
+          path: test.zip
