@@ -29,10 +29,11 @@ jobs:
       - name: Create Executable
         run: pyinstaller -D test.py
 
-      - name: Install 7-Zip
+      - name: Download 7-Zip
         run: |
-          curl -sS -o 7z.exe https://www.7-zip.org/a/7z.exe
-          Add-Path "$PWD;${ENV:PATH}"
+        curl -sS -o 7z.zip https://www.7-zip.org/a/7z1900-x64.zip
+        Expand-Archive -Path 7z.zip -DestinationPath 7z
+        $env:PATH += ";$(PWD)/7z"
 
       - name: Compress to ZIP
         run: |
