@@ -1,0 +1,39 @@
+name: test Windows win7+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pyinstaller-build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8-32bit
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Create Executable
+        run: pyinstaller -D test.py --platform=win32
+
+      - name: Compress to ZIP
+        run: Compress-Archive -Path 'dist/*' -DestinationPath 'test.zip'
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-zip
+          path: test.zip
