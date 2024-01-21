@@ -1,0 +1,45 @@
+name: test Windows one win7+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pyinstaller-build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Create Executable
+        run: pyinstaller -F test.py
+
+      - name: Install 7-Zip
+        run: |
+          curl -sS -o 7z.exe https://www.7-zip.org/a/7z.exe
+          Set-Item -Path Env:Path -Value "$pwd;$env:Path"
+
+      - name: Compress to ZIP
+        run: |
+          7z a -tzip test.zip dist/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-zip
+          path: test.zip
