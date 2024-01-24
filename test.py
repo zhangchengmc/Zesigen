@@ -61,20 +61,36 @@ def download():
         else:
             break
 
-    print("开始下载...")
-    threads = []
+    # 是否使用多线程下载
+    use_multithread = input("是否使用多线程下载？(是/否): ").lower() in ['是', 'yes', '是的', 'y']
 
-    for url in urls:
-        if url == "-mickey-mouse":
-            open_url_in_browser("https://luotianyimiku.github.io/R-C.jpg")
-        else:
-            save_path = choose_save_location(get_filename_from_url(url))
-            thread = threading.Thread(target=download_single_file, args=(url, save_path))
-            threads.append(thread)
-            thread.start()
+    if use_multithread:
+        # 输入多线程下载的线程数
+        thread_count = int(input("请输入多线程下载的线程数："))
 
-    for thread in threads:
-        thread.join()
+        print("开始下载...")
+        threads = []
+
+        for url in urls:
+            if url == "-mickey-mouse":
+                open_url_in_browser("https://luotianyimiku.github.io/R-C.jpg")
+            else:
+                save_path = choose_save_location(get_filename_from_url(url))
+                thread = threading.Thread(target=download_single_file, args=(url, save_path))
+                threads.append(thread)
+                thread.start()
+
+        for thread in threads:
+            thread.join()
+
+    else:
+        print("开始单线程下载...")
+        for url in urls:
+            if url == "-mickey-mouse":
+                open_url_in_browser("https://luotianyimiku.github.io/R-C.jpg")
+            else:
+                save_path = choose_save_location(get_filename_from_url(url))
+                download_single_file(url, save_path)
 
     print("所有文件下载完成！")
 
