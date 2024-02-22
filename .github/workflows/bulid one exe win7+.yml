@@ -29,6 +29,10 @@ jobs:
       - name: Create Executable
         run: pyinstaller -F test.py
 
+      - name: Compress Executable
+        run: |
+          Compress-Archive -Path ./dist/test.exe -DestinationPath test.zip
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
