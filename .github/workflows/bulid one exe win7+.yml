@@ -29,15 +29,6 @@ jobs:
       - name: Create Executable
         run: pyinstaller -F test.py
 
-      - name: Install 7-Zip
-        run: |
-          curl -sS -o 7z.exe https://www.7-zip.org/a/7z.exe
-          Set-Item -Path Env:Path -Value "$pwd;$env:Path"
-
-      - name: Compress to ZIP
-        run: |
-          7z a -tzip test.zip dist/
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
