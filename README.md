@@ -1,3 +1,3 @@
 # Zesigen-Download-Manager    
-下载器，使用python编写
+迮思艮下载器，使用python编写
     
