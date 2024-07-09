@@ -1,41 +1,45 @@
-jobs:  
-  pyinstaller-build:  
-    runs-on: windows-latest  
-    steps:  
-      - name: Checkout code  
-        uses: actions/checkout@v2  
-  
-      - name: Set up Python  
-        uses: actions/setup-python@v2  
-        with:  
-          python-version: 3.8  
-  
-      - name: Install dependencies  
-        run: |  
-          python -m pip install --upgrade pip  
-          pip install -r requirements.txt  
-  
-      - name: Install PyInstaller  
-        run: |  
-          pip install pyinstaller  
-  
-      - name: Create Executable  
-        run: |  
-          pyinstaller -D --onefile test.py  # 注意：通常-D是one-dir模式，如果你想要单个可执行文件使用--onefile  
-  
+name: test Windows win7+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pyinstaller-build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Create Executable
+        run: pyinstaller -D test.py
+
+      # 压缩到ZIP（使用PowerShell的Compress-Archive命令）  
       - name: Compress to ZIP  
         run: |  
-          # 切换到包含dist文件夹的目录（如果当前目录不是的话，但通常GitHub Actions会在仓库根目录执行）  
-          # 如果需要，可以取消注释下一行  
-          # cd $(pwd)  
+          # 切换到包含dist文件夹的目录（如果当前目录不是的话）  
+          cd $(Build.Repository.LocalPath)  
             
-          # 使用PowerShell的Compress-Archive命令压缩dist文件夹（或单个可执行文件，如果你使用了--onefile）  
-          # 注意：如果使用了--onefile，你可能需要直接压缩生成的.exe文件，或者创建一个包含它的新文件夹  
-          PowerShell -Command "Compress-Archive -Path 'dist/*' -DestinationPath 'test.zip'"  
-          # 如果你是用--onefile且想要包含其他文件，你可能需要创建一个新文件夹并将.exe和其他文件放入其中，然后再压缩  
-  
-      - name: Upload Artifact  
-        uses: actions/upload-artifact@v2  
-        with:  
-          name: test-zip  
+          # 使用PowerShell的Compress-Archive命令压缩dist文件夹  
+          PowerShell -Command "Compress-Archive -Path './dist/*' -DestinationPath './test.zip'"  
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-zip
           path: test.zip
