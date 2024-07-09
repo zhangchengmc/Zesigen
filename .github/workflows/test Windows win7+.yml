@@ -31,7 +31,7 @@ jobs:
 
       - name: Install 7-Zip
         run: |
-          curl -sS -o 7z.exe https://www.7-zip.org/a/7z.exe
+          curl -sS -o 7z.exe https://www.7-zip.org/a/7z2407-x64.exe
           Set-Item -Path Env:Path -Value "$pwd;$env:Path"
 
       - name: Compress to ZIP
