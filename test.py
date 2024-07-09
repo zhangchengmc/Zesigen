@@ -80,9 +80,9 @@ def download():
             threads = []
 
             for url in urls:
-                if url == "Zesigen-Download-Manager-github":
-                    open_url_in_browser("https://github.com/zhangchengmc/Zesigen-Download-Manager")
-                elif url == "Zesigen-Download-Manager-debug":
+                if url == "Zesigen-github":
+                    open_url_in_browser("https://github.com/zhangchengmc/Zesigen")
+                elif url == "Zesigen-debug":
                     print("触发调试模式，程序即将闪退...")
                 else:
                     save_path = choose_save_location(get_filename_from_url(url))
@@ -96,9 +96,9 @@ def download():
         else:
             print("开始单线程下载...")
             for url in urls:
-                if url == "Zesigen-Download-Manager-github":
-                    open_url_in_browser("https://github.com/zhangchengmc/Zesigen-Download-Manager")
-                elif url == "Zesigen-Download-Manager-debug":
+                if url == "Zesigen-github":
+                    open_url_in_browser("https://github.com/zhangchengmc/Zesigen")
+                elif url == "Zesigen-debug":
                     print("触发调试模式，程序即将闪退...")
                 else:
                     save_path = choose_save_location(get_filename_from_url(url))
