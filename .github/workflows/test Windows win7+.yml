@@ -29,15 +29,6 @@ jobs:
       - name: Create Executable
         run: pyinstaller -D test.py
 
-      # 压缩到ZIP（使用PowerShell的Compress-Archive命令）  
-      - name: Compress to ZIP  
-        run: |  
-          # 切换到包含dist文件夹的目录（如果当前目录不是的话）  
-          cd $(Build.Repository.LocalPath)  
-            
-          # 使用PowerShell的Compress-Archive命令压缩dist文件夹  
-          PowerShell -Command "Compress-Archive -Path './dist/*' -DestinationPath './test.zip'"  
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
