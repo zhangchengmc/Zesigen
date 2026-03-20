@@ -1,0 +1,16 @@
+# Zesigen 示例URL文件
+# 每行一个URL，以#开头的行是注释
+
+# 测试文件（小文件，适合测试）
+https://httpbin.org/image/jpeg
+https://httpbin.org/image/png
+https://httpbin.org/image/svg
+
+# 示例下载链接
+# 注意：这些是真实的测试URL，下载速度可能较慢
+https://releases.ubuntu.com/22.04/ubuntu-22.04-desktop-amd64.iso.torrent
+https://download.virtualbox.org/virtualbox/7.0.12/VirtualBox-7.0.12-159484-Win.exe
+
+# 更多测试URL
+http://httpbin.org/bytes/1024
+https://httpbin.org/stream-bytes/2048
