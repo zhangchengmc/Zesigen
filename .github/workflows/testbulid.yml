@@ -1,0 +1,170 @@
+name: Build for All Platforms
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ['3.8']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+
+    - name: Build Windows one-file executable
+      run: |
+        pyinstaller --onefile --name zesigen-windows src/zesigen.py
+
+    - name: Build Windows folder executable
+      run: |
+        pyinstaller --name zesigen-windows-folder src/zesigen.py
+
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: zesigen-windows
+        path: |
+          dist/zesigen-windows.exe
+          dist/zesigen-windows-folder/**
+
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ['3.8']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install -r requirements.txt
+        pip3 install pyinstaller
+
+    - name: Build macOS one-file executable
+      run: |
+        pyinstaller --onefile --name zesigen-macos src/zesigen.py
+
+    - name: Build macOS folder executable
+      run: |
+        pyinstaller --name zesigen-macos-folder src/zesigen.py
+
+    - name: Build macOS .app bundle
+      run: |
+        pyinstaller --windowed --name Zesigen --icon=assets/icon.icns src/zesigen.py || true
+
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: zesigen-macos
+        path: |
+          dist/zesigen-macos
+          dist/zesigen-macos-folder/**
+          dist/Zesigen.app/**
+
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev
+
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install -r requirements.txt
+        pip3 install pyinstaller
+
+    - name: Build Linux one-file executable
+      run: |
+        pyinstaller --onefile --name zesigen-linux src/zesigen.py
+
+    - name: Build Linux folder executable
+      run: |
+        pyinstaller --name zesigen-linux-folder src/zesigen.py
+
+    - name: Upload Linux artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: zesigen-linux
+        path: |
+          dist/zesigen-linux
+          dist/zesigen-linux-folder/**
+
+  release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Prepare release packages
+      run: |
+        mkdir -p release
+
+        # Windows
+        cp zesigen-windows/zesigen-windows.exe release/
+        # Linux
+        cp zesigen-linux/zesigen-linux release/
+        chmod +x release/zesigen-linux
+        # macOS
+        cp zesigen-macos/zesigen-macos release/
+        chmod +x release/zesigen-macos
+
+        # Zip each binary
+        cd release
+        for bin in *; do
+          if [ -f "$bin" ]; then
+            zip "${bin}.zip" "$bin"
+          fi
+        done
+        ls -la
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/*.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
